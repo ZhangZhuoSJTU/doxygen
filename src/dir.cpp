@@ -49,9 +49,8 @@ DirEntry &DirEntry::operator=(const DirEntry &de)
   return *this;
 }
 
-DirEntry::DirEntry(DirEntry &&de) : p(std::make_unique<Private>())
+DirEntry::DirEntry(DirEntry &&de) noexcept : p(std::move(de.p))
 {
-  p = std::move(de.p);
 }
 
 DirEntry &DirEntry::operator=(DirEntry &&de)

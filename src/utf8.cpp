@@ -22,32 +22,32 @@
 
 uint8_t getUTF8CharNumBytes(char c)
 {
-  uint8_t num=1;
   unsigned char uc = static_cast<unsigned char>(c);
-  if (uc>=0x80u) // multibyte character
+  if (uc < 0x80u)
   {
-    if ((uc&0xE0u)==0xC0u)
-    {
-      num=2; // 110x.xxxx: 2 byte character
-    }
-    if ((uc&0xF0u)==0xE0u)
-    {
-      num=3; // 1110.xxxx: 3 byte character
-    }
-    if ((uc&0xF8u)==0xF0u)
-    {
-      num=4; // 1111.0xxx: 4 byte character
-    }
-    if ((uc&0xFCu)==0xF8u)
-    {
-      num=5; // 1111.10xx: 5 byte character
-    }
-    if ((uc&0xFEu)==0xFCu)
-    {
-      num=6; // 1111.110x: 6 byte character
-    }
+    return 1;
   }
-  return num;
+  else if ((uc & 0xE0u) == 0xC0u)
+  {
+    return 2; // 110x.xxxx: 2 byte character
+  }
+  else if ((uc & 0xF0u) == 0xE0u)
+  {
+    return 3; // 1110.xxxx: 3 byte character
+  }
+  else if ((uc & 0xF8u) == 0xF0u)
+  {
+    return 4; // 1111.0xxx: 4 byte character
+  }
+  else if ((uc & 0xFCu) == 0xF8u)
+  {
+    return 5; // 1111.10xx: 5 byte character
+  }
+  else if ((uc & 0xFEu) == 0xFCu)
+  {
+    return 6; // 1111.110x: 6 byte character
+  }
+  return 1;
 }
 
 //! Decodes a given input of utf8 data to a unicode code point

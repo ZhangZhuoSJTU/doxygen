@@ -172,17 +172,23 @@ int QCString::contains( const char *str, bool cs ) const
   int count=0;
   const char *pos = data();
   int len = qstrlen(str);
-  while (*pos)
+  if (len==0) return 0;
+
+  if (cs)
   {
-    if (cs)
+    while ((pos = strstr(pos, str)) != nullptr)
     {
-      if (qstrncmp(pos,str,len)==0) count++;
+      count++;
+      pos++;
     }
-    else
+  }
+  else
+  {
+    while (*pos)
     {
       if (qstrnicmp(pos,str,len)==0) count++;
+      pos++;
     }
-    pos++;
   }
   return count;
 }

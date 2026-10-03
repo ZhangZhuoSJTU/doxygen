@@ -27,7 +27,7 @@ class DirEntry
    ~DirEntry();
     DirEntry(const DirEntry &);
     DirEntry &operator=(const DirEntry &);
-    DirEntry(DirEntry &&);
+    DirEntry(DirEntry &&) noexcept;
     DirEntry &operator=(DirEntry &&);
     bool is_directory() const;
     bool is_regular_file() const;

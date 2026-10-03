@@ -29,20 +29,49 @@
 inline void substituteInplace(std::string &s,
                               std::string_view toReplace,std::string_view replaceWith)
 {
+  if (toReplace.empty()) return;
+  size_t firstPos = s.find(toReplace);
+  if (firstPos == std::string::npos) return;
+
   std::string buf;
-  size_t pos = 0;
+  size_t pos = firstPos;
   size_t prevPos = 0;
   buf.reserve(s.length());
 
-  while ((pos=s.find(toReplace, prevPos))!=std::string::npos)
+  do
   {
     buf.append(s, prevPos, pos - prevPos);
     buf += replaceWith;
     prevPos = pos + toReplace.length();
   }
+  while ((pos=s.find(toReplace, prevPos))!=std::string::npos);
+
   buf.append(s, prevPos, s.size() - prevPos);
   s.swap(buf);
 }
+
+/** Returns a new string where occurrences of substring \a toReplace in string \a s are replaced by
+ *  string \a replaceWith.
+ */
+namespace detail
+{
+inline bool isSpaceChar(char c)
+{
+  return c==' ' || c=='\t' || c=='\n' || c=='\r';
+}
+
+inline std::string_view stripLeading(std::string_view s)
+{
+  if (s.empty() || !isSpaceChar(s.front())) return s;
+  return stripLeading(s.substr(1));
+}
+
+inline std::string_view stripTrailing(std::string_view s)
+{
+  if (s.empty() || !isSpaceChar(s.back())) return s;
+  return stripTrailing(s.substr(0, s.size() - 1));
+}
+} // namespace detail
 
 /** Returns a new string where occurrences of substring \a toReplace in string \a s are replaced by
  *  string \a replaceWith.
@@ -71,14 +100,7 @@ inline std::string substituteStringView(std::string_view s,
  */
 inline std::string_view stripWhiteSpace(std::string_view s)
 {
-  static auto isspace = [](char c){ return c==' ' || c=='\t' || c=='\n' || c=='\r'; };
-  size_t sl = s.length();
-  if (sl==0 || (!isspace(s[0]) && !isspace(s[sl-1]))) return s;
-  size_t start=0, end=sl-1;
-  while (start<sl && isspace(s[start])) start++;
-  if (start==sl) return s.substr(0,0); // only whitespace
-  while (end>start && isspace(s[end])) end--;
-  return s.substr(start,end+1-start);
+  return detail::stripTrailing(detail::stripLeading(s));
 }
 
 inline void addTerminalCharIfMissing(std::string &s,char c)
